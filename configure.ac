@@ -180,12 +180,12 @@ AC_ARG_ENABLE([debug],
       [debug="no"])
 AM_CONDITIONAL([DEBUG], [test x$debug = xyes])
 
-AC_ARG_ENABLE([hardening],
-  [AS_HELP_STRING([--enable-hardening],
-    [Enable compiler and linker options to frustrate memory corruption exploits @<:@yes@:>@])],
-  [hardening="$enableval"],
-  [hardening="yes"])
-AM_CONDITIONAL([HARDENING], [test x$hardening = xyes])
+#AC_ARG_ENABLE([hardening],
+#  [AS_HELP_STRING([--enable-hardening],
+#    [Enable compiler and linker options to frustrate memory corruption exploits @<:@yes@:>@])],
+#  [hardening="$enableval"],
+#  [hardening="yes"])
+#AM_CONDITIONAL([HARDENING], [test x$hardening = xyes])
 
 dnl -----------------------------------------------
 dnl Checks for programs, libraries, etc.
@@ -220,38 +220,38 @@ AC_DEFUN([check_link_flag],
 
 HARDEN_CFLAGS=""
 HARDEN_LDFLAGS=""
-AS_IF([test x"$hardening" != x"no"], [
-  check_cc_flag([-fno-strict-overflow], [HARDEN_CFLAGS="$HARDEN_CFLAGS -fno-strict-overflow"])
-
-  # This one will likely succeed, even on platforms where it does nothing.
-  check_cc_flag([-D_FORTIFY_SOURCE=2 -O2], [HARDEN_CFLAGS="$HARDEN_CFLAGS -D_FORTIFY_SOURCE=2 -O2"])
-
-  check_cc_flag([-fstack-protector-all],
-   [check_link_flag([-fstack-protector-all],
-     [HARDEN_CFLAGS="$HARDEN_CFLAGS -fstack-protector-all"
-      check_cc_flag([-Wstack-protector], [HARDEN_CFLAGS="$HARDEN_CFLAGS -Wstack-protector"],
-        [], [-fstack-protector-all])
-      check_cc_flag([--param ssp-buffer-size=1], [HARDEN_CFLAGS="$HARDEN_CFLAGS --param ssp-buffer-size=1"],
-        [], [-fstack-protector-all])])])
-
-  # At the link step, we might want -pie (GCC) or -Wl,-pie (Clang on OS X)
-  #
-  # The linker checks also compile code, so we need to include -fPIE as well.
-  check_cc_flag([-fPIE],
-   [check_link_flag([-fPIE -pie],
-     [HARDEN_CFLAGS="$HARDEN_CFLAGS -fPIE"
-      HARDEN_LDFLAGS="$HARDEN_LDFLAGS -pie"],
-     [check_link_flag([-fPIE -Wl,-pie],
-       [HARDEN_CFLAGS="$HARDEN_CFLAGS -fPIE"
-        HARDEN_LDFLAGS="$HARDEN_LDFLAGS -Wl,-pie"])])])
-
-  check_link_flag([-Wl,-z,noexecstack],
-   [HARDEN_LDFLAGS="$HARDEN_LDFLAGS -Wl,-z,noexecstack"])
-  check_link_flag([-Wl,-z,relro],
-   [HARDEN_LDFLAGS="$HARDEN_LDFLAGS -Wl,-z,relro"])
-  check_link_flag([-Wl,-z,now],
-   [HARDEN_LDFLAGS="$HARDEN_LDFLAGS -Wl,-z,now"])
-])
+#AS_IF([test x"$hardening" != x"no"], [
+#  check_cc_flag([-fno-strict-overflow], [HARDEN_CFLAGS="$HARDEN_CFLAGS -fno-strict-overflow"])
+#
+#  # This one will likely succeed, even on platforms where it does nothing.
+#  check_cc_flag([-D_FORTIFY_SOURCE=2 -O2], [HARDEN_CFLAGS="$HARDEN_CFLAGS -D_FORTIFY_SOURCE=2 -O2"])
+#
+#  check_cc_flag([-fstack-protector-all],
+#   [check_link_flag([-fstack-protector-all],
+#     [HARDEN_CFLAGS="$HARDEN_CFLAGS -fstack-protector-all"
+#      check_cc_flag([-Wstack-protector], [HARDEN_CFLAGS="$HARDEN_CFLAGS -Wstack-protector"],
+#        [], [-fstack-protector-all])
+#      check_cc_flag([--param ssp-buffer-size=1], [HARDEN_CFLAGS="$HARDEN_CFLAGS --param ssp-buffer-size=1"],
+#        [], [-fstack-protector-all])])])
+#
+#  # At the link step, we might want -pie (GCC) or -Wl,-pie (Clang on OS X)
+#  #
+#  # The linker checks also compile code, so we need to include -fPIE as well.
+#  check_cc_flag([-fPIE],
+#   [check_link_flag([-fPIE -pie],
+#     [HARDEN_CFLAGS="$HARDEN_CFLAGS -fPIE"
+#      HARDEN_LDFLAGS="$HARDEN_LDFLAGS -pie"],
+#     [check_link_flag([-fPIE -Wl,-pie],
+#       [HARDEN_CFLAGS="$HARDEN_CFLAGS -fPIE"
+#        HARDEN_LDFLAGS="$HARDEN_LDFLAGS -Wl,-pie"])])])
+#
+#  check_link_flag([-Wl,-z,noexecstack],
+#   [HARDEN_LDFLAGS="$HARDEN_LDFLAGS -Wl,-z,noexecstack"])
+#  check_link_flag([-Wl,-z,relro],
+#   [HARDEN_LDFLAGS="$HARDEN_LDFLAGS -Wl,-z,relro"])
+#  check_link_flag([-Wl,-z,now],
+#   [HARDEN_LDFLAGS="$HARDEN_LDFLAGS -Wl,-z,now"])
+#])
 
 AC_SUBST([HARDEN_CFLAGS])
 AC_SUBST([HARDEN_LDFLAGS])

@@ -171,10 +171,10 @@ if ENABLE_CONFIGFILE
     libvmi_libvmi_la_LIBADD= libvmi/config/libconfig.la
 endif
 
-if HARDENING
-    libvmi_libvmi_la_CFLAGS  += $(HARDEN_CFLAGS)
-    libvmi_libvmi_la_LDFLAGS += $(HARDEN_LDFLAGS)
-endif
+#if HARDENING
+#    libvmi_libvmi_la_CFLAGS  += $(HARDEN_CFLAGS)
+#    libvmi_libvmi_la_LDFLAGS += $(HARDEN_LDFLAGS)
+#endif
 
 if DEBUG
     libvmi_libvmi_la_CFLAGS+= -Wall -Wextra
