@@ -134,6 +134,12 @@ os          += libvmi/os/freebsd/freebsd.h \
                libvmi/os/freebsd/memory.c \
                libvmi/os/freebsd/symbols.c
 endif
+if UNIKRAFT
+os          += libvmi/os/unikraft/unikraft.h \
+               libvmi/os/unikraft/core.c \
+               libvmi/os/unikraft/memory.c \
+               libvmi/os/unikraft/symbols.c
+endif
 
 library_includedir=$(includedir)/libvmi
 library_include_HEADERS = $(h_public)

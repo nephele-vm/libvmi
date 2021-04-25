@@ -9,3 +9,7 @@ endif ()
 if (ENABLE_WINDOWS)
     add_subdirectory(windows)
 endif ()
+
+if (ENABLE_UNIKRAFT)
+    add_subdirectory(unikraft)
+endif ()

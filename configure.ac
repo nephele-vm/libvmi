@@ -112,6 +112,13 @@ AC_ARG_ENABLE([freebsd],
       [enable_freebsd=yes])
 AM_CONDITIONAL([FREEBSD], [test x"$enable_freebsd" = xyes])
 
+AC_ARG_ENABLE([unikraft],
+      [AS_HELP_STRING([--disable-unikraft],
+         [Disable support for introspecting Unikraft @<:@no@:>@])],
+      [enable_unikraft=$enableval],
+      [enable_unikraft=yes])
+AM_CONDITIONAL([UNIKRAFT], [test x"$enable_unikraft" = xyes])
+
 AC_ARG_ENABLE([vmifs],
       [AS_HELP_STRING([--disable-vmifs],
          [Disable building VMIFS tool: maps memory to a file through FUSE @<:@no@:>@])],
@@ -352,6 +359,10 @@ AC_CHECK_LIB(json-c, json_object_get_uint64, [AC_DEFINE([JSONC_UINT64_SUPPORT], 
 [then]
     AC_DEFINE([ENABLE_FREEBSD], [1], [Define to 1 to FreeBSD support.])
 [fi]
+[if test "$enable_unikraft" = "yes"]
+[then]
+    AC_DEFINE([ENABLE_UNIKRAFT], [1], [Define to 1 to Unikraft support.])
+[fi]
 
 have_vmifs='yes'
 [if test "$enable_vmifs" = "yes"]
@@ -474,6 +485,7 @@ OS                      | Option
 Windows                 | --enable-windows=$enable_windows
 Linux                   | --enable-linux=$enable_linux
 FreeBSD                 | --enable-freebsd=$enable_freebsd
+Unikraft                | --enable-unikraft=$enable_unikraft
 ------------------------|---------------------------
 
 Configuration           | Option

@@ -1050,6 +1050,10 @@ vmi_get_os_profile_path(
             freebsd_instance_t freebsd_instance = vmi->os_data;
             return freebsd_instance->sysmap;
         }
+        case VMI_OS_UNIKRAFT: {
+            unikraft_instance_t unikraft_instance = vmi->os_data;
+            return unikraft_instance->sysmap;
+        }
         default:
             break;
     };
