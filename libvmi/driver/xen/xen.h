@@ -156,8 +156,6 @@ status_t xen_write(
     addr_t paddr,
     void *buf,
     uint32_t length);
-int xen_is_pv(
-    vmi_instance_t vmi);
 status_t xen_test(
     uint64_t domainid,
     const char *name,

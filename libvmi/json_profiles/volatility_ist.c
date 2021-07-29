@@ -213,6 +213,8 @@ exit:
     return ret;
 }
 
+char *libvmi_default_os = "Linux";
+
 const char *volatility_get_os_type(vmi_instance_t vmi)
 {
     json_object *metadata = NULL, *os = NULL;
@@ -225,7 +227,7 @@ const char *volatility_get_os_type(vmi_instance_t vmi)
     if (json_object_object_get_ex(metadata, "windows", &os))
         return "Windows";
 
-    return "Linux";
+    return libvmi_default_os;
 }
 
 status_t

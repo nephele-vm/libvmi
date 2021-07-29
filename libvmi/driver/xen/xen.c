@@ -641,7 +641,7 @@ xen_init_vmi(
         goto _bail;
 
 #if defined(I386) || defined(X86_64)
-    if ( vmi->vm_type == HVM && (vmi->init_flags & VMI_INIT_EVENTS) )
+    if ( (vmi->vm_type == HVM || vmi->vm_type == PV64) && (vmi->init_flags & VMI_INIT_EVENTS) )
 #elif defined(ARM32) || defined(ARM64)
     if ( vmi->init_flags & VMI_INIT_EVENTS )
 #endif
@@ -674,7 +674,7 @@ xen_destroy(
     if (!xen) return;
 
 #if defined(I386) || defined(X86_64)
-    if ( vmi->vm_type == HVM && (vmi->init_flags & VMI_INIT_EVENTS) )
+    if ( (vmi->vm_type == HVM || vmi->vm_type == PV64) && (vmi->init_flags & VMI_INIT_EVENTS) )
 #elif defined(ARM32) || defined(ARM64)
     if ( vmi->init_flags & VMI_INIT_EVENTS )
 #endif
@@ -1886,6 +1886,90 @@ xen_get_vcpureg_pv64(
 }
 
 static status_t
+xen_get_vcpuregs_pv64(
+    vmi_instance_t vmi,
+    registers_t *regs,
+    unsigned long vcpu)
+{
+    xen_instance_t *xen = xen_get_instance(vmi);
+    vcpu_guest_context_any_t ctxt;
+
+    if (xen->libxcw.xc_vcpu_getcontext(xen->xchandle,
+            xen->domainid,
+            vcpu,
+            &ctxt)) {
+        errprint("Failed to get context information (HVM domain).\n");
+        return VMI_FAILURE;
+    }
+
+    regs->x86.rax = ctxt.x64.user_regs.rax;
+    regs->x86.rbx = ctxt.x64.user_regs.rbx;
+    regs->x86.rcx = ctxt.x64.user_regs.rcx;
+    regs->x86.rdx = ctxt.x64.user_regs.rdx;
+    regs->x86.rbp = ctxt.x64.user_regs.rbp;
+    regs->x86.rsi = ctxt.x64.user_regs.rsi;
+    regs->x86.rdi = ctxt.x64.user_regs.rdi;
+    regs->x86.rsp = ctxt.x64.user_regs.rsp;
+    regs->x86.r8 = ctxt.x64.user_regs.r8;
+    regs->x86.r9 = ctxt.x64.user_regs.r9;
+    regs->x86.r10 = ctxt.x64.user_regs.r10;
+    regs->x86.r11 = ctxt.x64.user_regs.r11;
+    regs->x86.r12 = ctxt.x64.user_regs.r12;
+    regs->x86.r13 = ctxt.x64.user_regs.r13;
+    regs->x86.r14 = ctxt.x64.user_regs.r14;
+    regs->x86.r15 = ctxt.x64.user_regs.r15;
+    regs->x86.rip = ctxt.x64.user_regs.rip;
+    regs->x86.rflags = ctxt.x64.user_regs.rflags;
+    regs->x86.cr0 = ctxt.x64.ctrlreg[0];
+    regs->x86.cr2 = ctxt.x64.ctrlreg[2];
+    regs->x86.cr3 = ctxt.x64.ctrlreg[3];
+    regs->x86.cr4 = ctxt.x64.ctrlreg[4];
+    regs->x86.dr7 = ctxt.x64.debugreg[7];
+    regs->x86.fs_base = ctxt.x64.fs_base;
+#if 0
+    regs->x86.fs_limit = ctxt.x64.f;
+    regs->x86.fs_sel = hvm_cpu->fs_sel;
+    regs->x86.fs_arbytes = hvm_cpu->fs_arbytes;
+    regs->x86.gs_base = ctxt.x64.gs_base_kernel;//TODO same as user? hvm_cpu->gs_base;
+    regs->x86.gs_limit = hvm_cpu->gs_limit;
+    regs->x86.gs_sel = hvm_cpu->gs_sel;
+    regs->x86.gs_arbytes = hvm_cpu->gs_arbytes;
+    regs->x86.cs_base = ctxt.x64.
+            hvm_cpu->cs_base;
+    regs->x86.cs_limit = hvm_cpu->cs_limit;
+    regs->x86.cs_sel = hvm_cpu->cs_sel;
+    regs->x86.cs_arbytes = hvm_cpu->cs_arbytes;
+    regs->x86.ss_base = hvm_cpu->ss_base;
+    regs->x86.ss_limit = hvm_cpu->ss_limit;
+    regs->x86.ss_sel = hvm_cpu->ss_sel;
+    regs->x86.ss_arbytes = hvm_cpu->ss_arbytes;
+    regs->x86.ds_base = hvm_cpu->ds_base;
+    regs->x86.ds_limit = hvm_cpu->ds_limit;
+    regs->x86.ds_sel = hvm_cpu->ds_sel;
+    regs->x86.ds_arbytes = hvm_cpu->ds_arbytes;
+    regs->x86.es_base = hvm_cpu->es_base;
+    regs->x86.es_limit = hvm_cpu->es_limit;
+    regs->x86.es_sel = hvm_cpu->es_sel;
+    regs->x86.es_arbytes = hvm_cpu->es_arbytes;
+    regs->x86.shadow_gs = hvm_cpu->shadow_gs;
+    regs->x86.idtr_base = ctxt.x64.ldt_base;
+            hvm_cpu->idtr_base;
+    regs->x86.idtr_limit = hvm_cpu->idtr_limit;
+    regs->x86.gdtr_base = hvm_cpu->gdtr_base;
+    regs->x86.gdtr_limit = hvm_cpu->gdtr_limit;
+    regs->x86.sysenter_cs = hvm_cpu->sysenter_cs;
+    regs->x86.sysenter_esp = hvm_cpu->sysenter_esp;
+    regs->x86.sysenter_eip = hvm_cpu->sysenter_eip;
+    regs->x86.msr_efer = hvm_cpu->msr_efer;
+    regs->x86.msr_star = hvm_cpu->msr_star;
+    regs->x86.msr_lstar = hvm_cpu->msr_lstar;
+    regs->x86.msr_cstar = hvm_cpu->msr_cstar;
+#endif
+
+    return VMI_SUCCESS;
+}
+
+static status_t
 xen_set_vcpureg_pv64(
     vmi_instance_t vmi,
     uint64_t value,
@@ -2595,6 +2679,8 @@ xen_get_vcpuregs(
 #if defined(I386) || defined (X86_64)
     if (vmi->vm_type == HVM)
         return xen_get_vcpuregs_hvm(vmi, regs, vcpu);
+    else if (vmi->vm_type == PV64)
+        return xen_get_vcpuregs_pv64(vmi, regs, vcpu);
 #endif
 
     return VMI_FAILURE;

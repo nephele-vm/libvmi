@@ -1119,6 +1119,7 @@ status_t process_guest_request(vmi_instance_t vmi, vm_event_compat_t *vmec)
     event->slat_id = vmec->altp2m_idx;
     event->vcpu_id = vmec->vcpu_id;
     event->page_mode = vmec->pm;
+    event->mem_event.gfn = vmec->mem_access.gfn;
 
     vmi->event_callback = 1;
     process_response ( event->callback(vmi, event),
@@ -3025,6 +3026,10 @@ status_t process_requests_7(vmi_instance_t vmi, uint32_t *requests_processed)
 
             case VM_EVENT_REASON_DESCRIPTOR_ACCESS:
                 memcpy(&vmec.desc_access, &req->u.desc_access, sizeof(vmec.desc_access));
+                break;
+
+            case VM_EVENT_REASON_GUEST_REQUEST:
+                vmec.mem_access.gfn = req->u.mem_access.gfn;
                 break;
         }
 

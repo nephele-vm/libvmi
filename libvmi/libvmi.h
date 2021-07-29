@@ -2611,6 +2611,11 @@ const char *vmi_get_rekall_path(
 const char *vmi_get_os_profile_path(
     vmi_instance_t vmi) NOEXCEPT;
 
+int xen_is_pv(
+    vmi_instance_t vmi);
+
+extern char *libvmi_default_os;
+
 #pragma GCC visibility pop
 
 #ifdef __cplusplus
