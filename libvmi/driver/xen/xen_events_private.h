@@ -56,7 +56,7 @@
 #ifndef XEN_EVENTS_PRIVATE_H
 #define XEN_EVENTS_PRIVATE_H
 
-#include <sys/poll.h>
+#include <poll.h>
 #include <unistd.h>
 #include <xenctrl.h>
 #include <libvmi/events.h>
